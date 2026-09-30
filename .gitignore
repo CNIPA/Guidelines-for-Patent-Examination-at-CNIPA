@@ -1,0 +1,21 @@
+# Python 字节码缓存
+__pycache__/
+*.py[cod]
+
+# LaTeX 编译中间产物（可由 tectonic 重新生成，README 目录结构中未列出）
+latex/main.aux
+latex/main.out
+latex/main.toc
+latex/main.log
+latex/main.synctex.gz
+latex/main.idx.ptc
+latex/main.p*.ptc
+latex/main_rev.aux
+latex/main_rev.out
+latex/main_rev.toc
+latex/main_rev.log
+latex/main_rev.idx.ptc
+latex/main_rev.p*.ptc
+
+# 实验特性生成的临时文件（默认不存在）
+data/at_skip.json

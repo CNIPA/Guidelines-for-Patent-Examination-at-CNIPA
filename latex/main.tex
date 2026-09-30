@@ -1,0 +1,18 @@
+% !TeX program = tectonic
+% 非官方 LaTeX 版《专利审查指南》——由 tools/build_tex.py 自动生成正文
+\documentclass{guide}
+\begin{document}
+\input{frontcover}
+\cleardoublepage\pagestyle{tocmain}\setcounter{page}{1}
+{\centering\guidecenterpage\heiti\fontsize{14.04bp}{21bp}\selectfont 总\quad 目\quad 录\par}
+\guideoutline[0]{总目录}{toc}
+\vspace{18bp}
+\setcounter{tocdepth}{1}\makeatletter\@starttoc{toc}\makeatother
+\input{content/part1.tex}
+\input{content/part2.tex}
+\input{content/part3.tex}
+\input{content/part4.tex}
+\input{content/part5.tex}
+\input{content/part6.tex}
+\input{content/idx.tex}
+\end{document}
