@@ -1,0 +1,84 @@
+{
+ "_comment": "《国家知识产权局关于修改〈专利审查指南〉的决定》(局令第84号, 2025-11-13 公布, 2026-01-01 施行) 的结构化修订覆盖层。new 文本来自 tools/parse_decision.py 解析出的 data/decision_items.json，通过 from 引用，避免手工转录。",
+ "release": {
+  "name": "2025年修改",
+  "order": "局令第84号",
+  "published": "2025-11-13",
+  "effective": "2026-01-01"
+ },
+ "ops": [
+  {"op": "replace_para", "part": 1, "chapter": 1, "section": "4.1.2", "para": 0, "n": 1, "from": {"item": "一", "sub": "一"}},
+  {"op": "pairreplace", "part": 1, "chapter": 1, "section": "4.1.2", "from": {"item": "一", "sub": "二"}},
+
+  {"op": "append_para", "part": 1, "chapter": 1, "section": "4.1.6", "para": 1, "from": {"item": "二", "sub": "一"}},
+  {"op": "insert_section_end", "part": 1, "chapter": 1, "section": "4.1.6", "from": {"item": "二", "sub": "二"}},
+
+  {"op": "insert_section_end", "part": 1, "chapter": 1, "section": "6.2.1.2", "from": {"item": "三", "sub": ""}},
+  {"op": "insert_section_end", "part": 1, "chapter": 1, "section": "6.2.2.2", "from": {"item": "三", "sub": ""}},
+
+  {"op": "replace_para", "part": 2, "chapter": 1, "section": "4.4", "para": 0, "n": 1, "from": {"item": "四", "sub": ""}},
+  {"op": "replace_para", "part": 2, "chapter": 3, "section": "6.2.2", "para": 1, "n": 1, "from": {"item": "五", "sub": ""}},
+  {"op": "set_segs", "part": 2, "chapter": 3, "section": "6.2.2", "para": 1, "segs": [
+    ["del", "但是，"],
+    ["", "对于同一申请人同日（仅指申请日）对同样的发明创造既申请实用新型又申请发明专利的，"],
+    ["del", "在先获得的实用新型专利权尚未终止，并且申请人在申请时分别作出说明的，除通过修改发明专利申请外，还可以通过放弃实用新型专利权避免重复授权。因此，在对上述发明专利申请进行审查的过程中，如果该发明专利申请符合授予专利权的其他条件，应当通知申请人进行选择或者修改，"],
+    ["add", "根据专利法实施细则第四十七条的规定，应当在申请时分别说明对同样的发明创造已申请了另一专利；未作说明的，依照专利法第九条第一款关于同样的发明创造只能授予一项专利权的规定处理；作出说明的，发明专利申请经审查没有发现驳回理由，应当通知申请人在规定期限内声明放弃实用新型专利权。申请人声明放弃的，应当作出授予发明专利权的决定，并在公告授予发明专利权时一并公告申请人放弃实用新型专利权声明。申请人不同意放弃的，应当驳回该发明专利申请；申请人期满未答复的，视为撤回该发明专利申请。"]]},
+  {"op": "set_segs", "part": 2, "chapter": 3, "section": "6.2.2", "para": 2, "segs": [
+    ["", "申请人"], ["del", "选择"],
+    ["", "放弃已经授予的实用新型专利权的，应当在答复审查意见通知书时附交放弃实用新型专利权的书面声明。此时，对那件符合授权条件、尚未授权的发明专利申请，应当发出授权通知书，并将放弃上述实用新型专利权的书面声明转至有关审查部门，由专利局予以登记和公告，公告上注明上述实用新型专利权自公告授予发明专利权之日起终止。"]]},
+  {"op": "replace_para", "part": 2, "chapter": 4, "section": "6.4", "para": 0, "n": 1, "from": {"item": "六", "sub": ""}},
+
+  {"op": "retitle", "part": 2, "chapter": 9, "section": "6",
+   "title": "涉及人工智能、大数据等包含算法特征或商业规则和方法特征的发明专利申请审查相关规定"},
+  {"op": "replace_para", "part": 2, "chapter": 9, "section": "6.1", "para": 0, "n": 1, "from": {"item": "七", "sub": "二"}},
+  {"op": "renumber_headings", "part": 2, "chapter": 9,
+   "map": {"6.1.1": "6.1.2", "6.1.2": "6.1.3", "6.1.3": "6.1.4"}},
+  {"op": "insert_before_heading", "part": 2, "chapter": 9,
+   "anchor": "根据专利法第二十五条第一款第（二）项的审查", "from": {"item": "七", "sub": "三"}},
+  {"op": "replace_para", "part": 2, "chapter": 9, "section": "6.3.1", "para": 0, "n": 1, "from": {"item": "七", "sub": "八"}},
+  {"op": "renumber_items", "part": 2, "chapter": 9, "section": "6.2",
+   "map": {"（1）": "（2）", "（2）": "（3）", "（3）": "（4）", "（4）": "（5）",
+           "【例1】": "【例3】", "【例2】": "【例4】", "【例3】": "【例5】", "【例4】": "【例6】",
+           "【例5】": "【例7】", "【例6】": "【例8】", "【例7】": "【例9】",
+           "【例8】": "【例10】", "【例9】": "【例11】", "【例10】": "【例12】",
+           "【例11】": "【例13】", "【例12】": "【例14】", "【例13】": "【例15】",
+           "【例14】": "【例16】", "【例15】": "【例17】"}},
+  {"op": "insert_before_para", "part": 2, "chapter": 9, "section": "6.2", "para": 1, "from": {"item": "七", "sub": "五"}},
+  {"op": "insert_section_end", "part": 2, "chapter": 9, "section": "6.2", "from": {"item": "七", "sub": "七"}},
+  {"op": "insert_section_end", "part": 2, "chapter": 9, "section": "6.3", "from": {"item": "七", "sub": "九"}},
+  {"op": "insert_chapter_end", "part": 2, "chapter": 9, "from": {"item": "八", "sub": ""}},
+
+  {"op": "set_segs", "part": 2, "chapter": 10, "section": "9", "para": 1, "segs": [
+    ["", "术语“动物”"], ["del", "“植物”"], ["", "的定义适用本部分第一章第4.4节的规定。"],
+    ["add", "术语“植物”是指可以借助光合作用，以水、二氧化碳和无机盐等无机物合成碳水化合物、蛋白质来维系生存，并通常不发生移动的生物。"],
+    ["", "其中所述的动物和植物可以是动物和植物的各级分类单位，如界、门、纲、目、科、属和种等。"]]},
+  {"op": "replace_para", "part": 2, "chapter": 10, "section": "9.1.2.3", "para": 2, "n": 2, "from": {"item": "九", "sub": "二"}},
+  {"op": "replace_para", "part": 2, "chapter": 10, "section": "9.1.2.4", "para": 0, "n": 1, "from": {"item": "九", "sub": "三"}},
+
+  {"op": "replace_para", "part": 3, "chapter": 1, "section": "5.2.3.2", "para": 4, "n": 1, "from": {"item": "十", "sub": ""}},
+  {"op": "delete_para", "part": 3, "chapter": 1, "section": "7.3", "find": "核苷酸和/或氨基酸序列表"},
+
+  {"op": "replace_para", "part": 4, "chapter": 1, "section": "6.2", "para": 0, "n": 1, "from": {"item": "十二", "sub": "一"}},
+  {"op": "delete_para", "part": 4, "chapter": 1, "section": "6.2", "find": "对于撤销驳回决定的复审决定可以简化或者省略案由部分"},
+  {"op": "replace_para", "part": 4, "chapter": 3, "section": "2.1", "para": 0, "n": 1, "from": {"item": "十三", "sub": ""}},
+  {"op": "renumber_items", "part": 4, "chapter": 3, "section": "3.2",
+   "map": {"（2）": "（3）", "（3）": "（4）", "（4）": "（5）"}},
+  {"op": "insert_after_para", "part": 4, "chapter": 3, "section": "3.2", "para": 1, "from": {"item": "十四", "sub": "一"}},
+  {"op": "replace_para", "part": 4, "chapter": 3, "section": "3.3", "para": 2, "n": 1, "from": {"item": "十五", "sub": ""}},
+  {"op": "insert_section_end", "part": 4, "chapter": 3, "section": "4.6", "from": {"item": "十六", "sub": ""}},
+
+  {"op": "replace_para", "part": 5, "chapter": 2, "section": "1", "para": 2, "n": 1, "from": {"item": "十七", "sub": ""}},
+  {"op": "replace_para", "part": 5, "chapter": 2, "section": "4.2.1.1", "para": 0, "n": 4, "from": {"item": "十八", "sub": "一"}},
+  {"op": "delete_section", "part": 5, "chapter": 2, "section": "4.2.1.2"},
+  {"op": "renumber_headings", "part": 5, "chapter": 2, "map": {"4.2.1.3": "4.2.1.2"}},
+
+  {"op": "insert_after_para", "part": 5, "chapter": 7, "section": "8.1", "para": 0, "from": {"item": "十九", "sub": "一"}},
+  {"op": "renumber_headings", "part": 5, "chapter": 7, "map": {"8.3": "8.4", "8.4": "8.5"}},
+  {"op": "insert_before_heading", "part": 5, "chapter": 7, "anchor": "延迟审查", "from": {"item": "十九", "sub": "二"}},
+
+  {"op": "replace_para", "part": 5, "chapter": 8, "section": "1.3.2.6", "para": 0, "n": 2, "from": {"item": "二十", "sub": ""}},
+  {"op": "replace_para", "part": 5, "chapter": 8, "section": "1.3.2.7", "para": 0, "n": 3, "from": {"item": "二十一", "sub": ""}},
+  {"op": "insert_section_end", "part": 5, "chapter": 9, "section": "1.2.1", "from": {"item": "二十二", "sub": ""}},
+  {"op": "replace_para", "part": 5, "chapter": 9, "section": "2.2.1", "para": 0, "n": 1, "from": {"item": "二十三", "sub": ""}}
+ ]
+}

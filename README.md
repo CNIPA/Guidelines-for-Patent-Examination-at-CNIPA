@@ -1,5 +1,15 @@
 # 非官方版《专利审查指南》（2023）
 
+> **📥 下载 PDF**（各版本按公布日打 tag；`dist/` 目录亦保留各版本 PDF）
+> - **2025 年修改版（tag [`20251113`](https://github.com/CNIPA/Guidelines-for-Patent-Examination-at-CNIPA/releases/tag/20251113)）**：
+>   [不带修订记录（干净版）](https://github.com/CNIPA/Guidelines-for-Patent-Examination-at-CNIPA/releases/download/20251113/Guidelines-for-Patent-Examination-2023_unofficial_no-revision-marks.pdf) ·
+>   [带修订记录（对照版）](https://github.com/CNIPA/Guidelines-for-Patent-Examination-at-CNIPA/releases/download/20251113/Guidelines-for-Patent-Examination-2023_unofficial_with-revision-marks.pdf)
+> - 2023 原版（tag [`20231221`](https://github.com/CNIPA/Guidelines-for-Patent-Examination-at-CNIPA/releases/tag/20231221)）：
+>   [直接下载 PDF](https://github.com/CNIPA/Guidelines-for-Patent-Examination-at-CNIPA/releases/download/20231221/Guidelines-for-Patent-Examination-2023_unofficial.pdf)
+> - 全部版本见 [Releases](https://github.com/CNIPA/Guidelines-for-Patent-Examination-at-CNIPA/releases)。
+>
+> **许可协议**：[CC0 1.0 通用（公共领域贡献）](LICENSE) —— 可自由复制、修改、分发，包括商业用途，无需署名。
+
 把国家知识产权局《专利审查指南》PDF 逆向工程成一个**非官方、可排版、可修订**的 LaTeX 工程。
 
 目标不是像素级复刻官方 PDF，而是：
@@ -8,7 +18,7 @@
 - 字体、字号、行距、字间距**与原书大致一致**（宋体 10.56bp、行距 15.6bp、CJK 步进约 11.75bp）；
 - 未来官方发布"修改对照表"时，能**快速生成带修订记录的版本 + 排版干净的最新版**。
 
-> 说明：因不追求逐页逐行精确还原（含防孤行标题导致的留白），生成 PDF 的页数与官方 613 页不同（本工程当前约 680 页），行尾对齐方式也不同，但内容完整、左侧标记对齐。
+> 说明：因不追求逐页逐行精确还原（含防孤行标题导致的留白），生成 PDF 的页数与官方 613 页不同（本工程 2023 版约 680 页，叠加 2025 年修改后的新版约 695 页），行尾对齐方式也不同，但内容完整、左侧标记对齐。
 
 ---
 
@@ -19,25 +29,40 @@ source/                  官方原始资料（用日期表示版本）
   20231221_专利审查指南2023.pdf       官方原书（权威数据源）
   20231221_专利审查指南2023.bookmark  官方书签（页码 -> 结构）
   20231221_专利审查指南2023.doc       官方 DOC（备查）
+  20251113_国家知识产权局关于修改专利审查指南的决定.pdf   局令第84号决定 + 修改对照表附件
 data/
   pages.json             由官方 PDF 抽取的逐页 span/矢量/图片（原始中间产物，仅 extract_pages 生成）
   content.json           结构化正文：全部文字、标题层级、左侧边注、索引等（build_tex 的唯一输入，内容真源）
+  decision_items.json    由决定 PDF 解析出的结构化修改条目（parse_decision.py 生成）
+  revisions_2025.json    2025 年修改的修订覆盖层（引用 decision_items.json 的新文本）
+  content_2026.json      应用覆盖层后的“带修订标注”内容（apply_revisions.py 生成）
   at_skip.json           可选：仅 --actualtext 实验模式用（由 detect_spanning 按需生成，平时不存在）
+LICENSE                  CC0 1.0（公共领域贡献）
+dist/                    各版本编译产物（文件名前缀为“公布日_”，便于用户查看历史版本）
+  20231221_专利审查指南2023_非官方版.pdf                    （2023 原版，tag 20231221）
+  20251113_专利审查指南2023_非官方版_不带修订记录.pdf        （2025 新版·干净版，tag 20251113）
+  20251113_专利审查指南2023_非官方版_带修订记录.pdf          （2025 新版·修订对照版，tag 20251113）
 latex/
-  guide.cls              文档类：页面几何、字体、页眉页脚、边注、修订宏、分目录
+  guide.cls              文档类：页面几何、字体、页眉页脚、边注、EPO 式修订宏、分目录
+  cjkhl.sty              中文可换行背景高亮宏包（dpctex，MIT/LPPL；本工程加了删除线钩子）
   main.tex               主文档（自动生成）
   frontcover.tex         封面（自动生成）
   content/partN.tex      各部分正文（自动生成）
   content/idx.tex        索引（其他）（自动生成）
   figures/               抽取出的 16 张图
-  main.pdf               编译产物（干净版）
-  main_rev.pdf           编译产物（修订标记版，--revision 时）
+  main.pdf               编译产物（干净版；build_2025.py 后为 2025 年修改版）
+  main_rev.pdf           编译产物（EPO 式修订对照版）
 tools/
   paths.py               原版资料来源路径（source/ 下按扩展名自动识别）
   extract_pages.py        PDF -> pages.json
   build_content.py        pages.json + bookmark -> content.json（含边注挂接）
-  build_tex.py           content.json -> latex/*.tex
-  build.py               一键构建脚本
+  parse_decision.py       修改决定 PDF -> decision_items.json（按段落重建 + 条目归类）
+  apply_revisions.py      覆盖层 + content.json -> content_2026.json（精确 diff 标注 add/del）
+  guidemodel.py           content.json 导航（按 部分/章/节号 定位标题与段落）
+  textdiff.py             修订 diff 工具：句子对齐 + 逐字/记号级比较、自适应合并（apply_revisions 与 build_tex 共用）
+  build_tex.py            content.json -> latex/*.tex（支持 REVISION / CONTENT_JSON）
+  build_2025.py           2025 修改一键构建：干净版 + EPO 式修订对照版
+  build.py               原版（2023）一键构建脚本
   verify_notes.py        左侧边注对齐校验（前/中/后多页抽查）
   verify_text.py         文本保真度校验：content.json ↔ main.pdf（证明无丢字/无幻觉）
   verify_layout.py       版式校验：封面居中 / 右侧无标签 / 总目录链接 / 分目录非空
@@ -57,6 +82,7 @@ tools/
 > 官方原始资料放在 `source/` 目录，文件名以**出版日期表示版本**（如 `20231221_专利审查指南2023.pdf` /
 > `.bookmark` / `.doc`）。脚本通过 `tools/paths.py` 按扩展名自动识别，**换新版只需替换 `source/` 里的文件**，
 > 无需改代码；也可用环境变量 `GUIDE_SOURCE_DIR` 指向别的资料目录。
+> （`source/` 里同时存放“修改决定”等 PDF 时，`paths.py` 会**排除**文件名含“决定/通知/公告”的 PDF，仍取最新的指南 PDF。）
 
 ```bash
 # 干净版：抽取 + 生成源码 + 编译 -> latex/main.pdf
@@ -65,7 +91,7 @@ python tools/build.py
 # 仅重新生成源码并编译（跳过 PDF 抽取，改了 content.json 后用）
 python tools/build.py --no-extract
 
-# 修订标记版：旧文红色删除线 / 新增蓝色下划线 -> latex/main_rev.pdf
+# 修订标记版：新增绿色 / 删除红色删除线 -> latex/main_rev.pdf
 python tools/build.py --revision
 
 # 附加“复制不带折行换行”实验标记（见下方“复制文本”一节）
@@ -80,57 +106,65 @@ python tools/build_content.py    # pages.json + bookmark -> data/content.json
 python tools/build_tex.py        # -> latex/*.tex  (REVISION=1 生成修订标记版)
 ```
 
+### 2025 年修改（局令第84号）一键构建
+
+```bash
+# 解析决定 -> 应用修订覆盖层 -> 编译两个版本
+python tools/build_2025.py
+
+#   新版（干净版）  -> latex/main.pdf
+#   修订对照版      -> latex/main_rev.pdf
+
+# 已解析过决定、只想重跑覆盖层与编译：
+python tools/build_2025.py --no-parse
+```
+
 ---
 
-## 修订工作流（应对官方"修改对照表"）
+## 修订工作流（应对官方“修改决定 / 修改对照表”）
 
-官方只发布修改对照表，不发布修订后 PDF。本工程让你在发生修订时，快速得到两个版本。
+官方只发布修改决定（含对照表附件），不发布修订后 PDF。本工程让你在发生修订时，**先提取数据、再一键生成两个版本**。
 
-### 1. 修订宏（已在 `guide.cls` 定义）
+### 1. 修订标记规则（`guide.cls`，参照并加强 EPO《… showing modifications》）
 
-```latex
-\added{新增的文字}              % 蓝色下划线（仅修订版显示）
-\deleted{被删除的文字}          % 红色删除线（仅修订版显示）
-\changed{旧文字}{新文字}        % 旧文字删除线 + 新文字下划线
-```
+样式规则已从欧专局修订对照版提炼并**加强**（背景高亮比单纯变色明显得多），写进 `guide.cls`：
+
+| 语义 | 背景 | 装饰 | 宏 |
+|---|---|---|---|
+| 新增文字 | 浅绿 `revaddbg` | — | `\added{...}`（内部 `\cjkhl`） |
+| 删除文字 | 浅红 `revdelbg` | 删除线 | `\deleted{...}`（内部 `\cjkhlst`） |
+| 替换 | 旧浅红 + 新浅绿 | | `\changed{旧}{新}` |
+| 标题改号/改名 | 旧标题“幽灵行”= 浅红+删除线 | 旧在前、新在后 | `\guiderevold{...}` + 新标题 |
+| 新增标题 | 浅绿高亮标题 | | `\guiderevnew{...}` |
+
+**增删顺序约定**：同一处既有删除又有新增时，**一律“删除在前、新增在后”**（`apply_revisions.py` 的 `_order_del_before_add` 保证，标题的幽灵行也同样）。
 
 效果由 `\ifrevision` 控制：
 
-- **干净版**（`\revisionfalse`，默认）：`\added` 正常显示、`\deleted` 不显示、`\changed` 显示新文字。
-- **修订标记版**（`\revisiontrue`）：按上色规则显示增删，便于逐条核对修改。
+- **干净版**（`\revisionfalse`，默认）：`\added` 正常显示、`\deleted` 不显示（若整段被删则整段消失）、`\changed` 只显示新文字。目录/书签只含新文本。
+- **修订对照版**（`\revisiontrue`）：新增浅绿背景、删除浅红背景+删除线。
 
-### 2. 应用一次修订的典型步骤
+> 实现说明：中文**可换行的背景高亮**用 `cjkhl`（`latex/cjkhl.sty`，源自 dpctex / D. Carlisle，MIT/LPPL），它把每个字放进一个 `\colorbox`。删除线不能用 `\CJKsout`（在 `\colorbox` 内不绘制）、也不能用 `ulem`/`soul`（与 `xeCJK` 的 `CJKglue` 冲突，报 `Improper \prevdepth`/`Reconstruction failed`），故在 `cjkhl` 的每字钩子里**手工画一条横线**（`\cjkhlst`）。
 
-假设官方发布了"2024 年修改决定"，对照表指出某段把"可以"改为"应当"：
+### 2. 提取修改数据 → 覆盖层 → 应用（2025 年修改已内置）
 
-1. 在 `data/content.json` 或生成的 `latex/content/partN.tex` 中定位该段；
-2. 把对应文字改写：
-
-   ```latex
-   % 原：申请人可以提供该外观设计的产品样品或者模型。
-   % 改：
-   申请人\changed{可以}{应当}提供该外观设计的产品样品或者模型。
-   ```
-
-3. 构建两个版本：
-
-   ```bash
-   python tools/build.py            # 干净最新版  -> main.pdf
-   python tools/build.py --revision # 修订对照版  -> main_rev.pdf
-   ```
-
-### 3. 大规模修订的推荐做法（可脚本化）
-
-当修改条目很多时，建议维护一份 `data/revisions.json` 覆盖层，格式例如：
-
-```json
-[
-  {"part": 1, "anchor": "申请人可以提供", "old": "可以", "new": "应当"},
-  {"part": 2, "anchor": "...", "old": "...", "new": "..."}
-]
+```bash
+python tools/parse_decision.py    # 决定 PDF -> data/decision_items.json
+python tools/apply_revisions.py   # content.json + revisions_2025.json -> content_2026.json
 ```
 
-再用一个小脚本读取 `content.json`，对命中的段落 seg 文本做 `\changed{old}{new}` 包裹，然后 `build_tex.py` 生成。这样修订来源可追溯、可重放，干净版/标记版一键双出。（本仓库暂未内置该覆盖层脚本，按需扩展。）
+- **`parse_decision.py`**：按版面（正文左边界/首行缩进）把决定 PDF 的“物理行”重建成“段落”，再按 `一、二、…`（顶层）与 `（一）（二）…`（子项）归类，输出 `decision_items.json`；同时排除对 `第（一）项` 之类引用的误拆，并把附件“修改对照表”截掉。
+- **`revisions_2025.json`**：人工核对的覆盖层，每条操作说明“改哪一节、哪一段、何种操作”，新文本通过 `from` 引用 `decision_items.json`（**不手工转录**，保证与决定一致）。支持的操作：`replace_para` / `append_para` / `insert_after_para` / `insert_before_para` / `insert_section_end` / `insert_chapter_end` / `insert_before_heading` / `delete_para` / `delete_section` / `retitle` / `renumber_headings` / `renumber_items` / `pairreplace`。
+- **`apply_revisions.py`**：定位目标段落，对“修改”做**以人为本的标注**（`tools/textdiff.py`）：先按句末标点对齐（标点不会错配），句内再做记号级比较——**例号/列表号/章节号按整体记号**处理（`【例10】→【例12】`、`6.1.3→6.1.4` 标整段，而非只标一个数字），**删除一律在前、新增在后**。目标是让人一眼看出“改前是什么、改后是什么”：**小的增删单独标出**（如新增的两字“品种”、删除的两字“选择”），**整段重写的部分则成块“整段删 + 整段增”**，而不是逐字交错。多数段落由 `textdiff` 自动得到合适粒度；**个别难以自动对齐或需成块显示的段落**在 `revisions_2025.json` 里用 `set_segs` **逐段核定**（如 6.2.2、9 第二段）。列表条目（（1）（2）…）按**条目正文**对齐：插入新条目时旧条目只改序号（与官方《修改对照表》一致）。标题改号/改名只标真正改动处（如仅序号）。输出 `content_2026.json`，`build_tex.py` 据此一次生成干净版与修订版。
+
+### 3. 未来再修订时
+
+1. 把新的决定 PDF 放进 `source/`；
+2. 写一份新的 `data/revisions_20XX.json`（可复制 `revisions_2025.json` 改写）；
+3. `parse_decision.py` 里改一下目标文件名，`apply_revisions.py` 里改一下覆盖层文件名；
+4. `build_2025.py`/`build_tex.py` 设 `CONTENT_JSON` 指向新的 `content_20XX.json`，编译即得两个版本。
+
+样式规则本身无需改动——它已在 `guide.cls` 里参数化。
 
 ---
 
@@ -249,6 +283,9 @@ python tools/verify_text.py
 - 页数、行尾对齐、页眉书眉交替规则按"大致一致"实现，不与官方逐页相等；
 - 原书部分封面用"方正大黑简体"，本工程以 `SimHei + AutoFakeBold` 近似；
 - 图/公式/结构式统一按 300dpi **栅格化区域**抽取（不会把带透明掩码的化学结构式抽成黑块），在版式中**单独占位**（不再与文字重叠），故非可编辑矢量、且相对原书的精确位置略有出入；
+  - 例外：**可用 LaTeX 排版的公式**改为 `formula` 块（`{"t":"formula","tex":"..."}`），由 `guide.cls` 的 `\guideformula` 以行间公式呈现。目前第二部分第九章例 1 的圆周率公式 `π=(Σ圆内“点”计数值)/(Σ正方形内“点”计数值)×4` 已如此修正（该处原先被栅格化成图片，且图片还吞掉了紧随其后的一行正文，现一并修复）；
 - 原书对短标题（约 2～3 个汉字）采用"字间加空"排版（如"年 费""引 言""新 颖 性"）。本工程在 `build_content.clean_head_text` 中**去掉了标题内部相邻汉字之间的空格**（标题号/章号与标题之间的分隔空格保留），故标题样式与原书略有出入；正文段落不含此类空格，不受影响；
 - 修订覆盖层脚本（见上）需自行补充以支撑批量修订；
+- **2025 年修改版**：`content_2026.json` 由 `content.json`（2023 原书）+ `revisions_2025.json` 叠加而来；正文与标题的增删改已按决定落实并着色，但**索引中的“位置串”指向的节号未随改号自动更新**（决定未包含索引变更；如涉改号节被索引引用，链接可能指向旧节号），且**页码/页数**与本工程自身的 2023 版不同；
+- **修订对照版**对“修改”只标出真正改动的字词（例号/序号整体标记），红/绿成块；对**大段改写**的段落退回「整段删除+整段新增」（`textdiff` 相似度阈值）；`\added`/`\deleted` 仅在该版有背景色；
 - "复制不带折行换行"为实验特性（默认关闭）：加标记会轻微影响分页，跨页段落的探测不保证 100%，详见"复制文本"一节。

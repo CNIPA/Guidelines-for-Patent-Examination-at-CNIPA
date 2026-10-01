@@ -301,13 +301,26 @@
    #1\nobreak\leaders\hbox to 2.64bp{\hss.\hss}\hfill\nobreak\hbox{#2}\par}\fi}
 \makeatother
 
-% ================= 修订标记 =================
-\RequirePackage{ulem}\normalem
-\definecolor{revadd}{RGB}{0,110,180}
-\definecolor{revdel}{RGB}{200,40,40}
-\newcommand*{\added}[1]{\ifrevision\textcolor{revadd}{\uline{#1}}\else#1\fi}
-\newcommand*{\deleted}[1]{\ifrevision\textcolor{revdel}{\sout{#1}}\fi}
+% ================= 修订标记（参照 EPO《Guidelines ... showing modifications》，并加强） =================
+%   规则：新增 = 绿色背景高亮；删除 = 红色背景高亮 + 删除线。
+%   背景高亮用 cjkhl（可自动换行）；删除线在 \colorbox 内不被 \CJKsout 支持，故改为逐字手绘横线。
+%   由 \revisiontrue/false 控制：干净版只显示新文本，修订版按背景色显示增删。
+\RequirePackage{xeCJKfntef}
+\RequirePackage{cjkhl}
+\definecolor{revaddbg}{RGB}{198,240,198}   % 新增：浅绿背景
+\definecolor{revdelbg}{RGB}{255,200,200}   % 删除：浅红背景
+\newcommand*{\added}[1]{\ifrevision\cjkhl{revaddbg}{#1}\else#1\fi}
+\newcommand*{\deleted}[1]{\ifrevision\cjkhlst{revdelbg}{#1}\fi}
 \newcommand*{\changed}[2]{\deleted{#1}\added{#2}}
+% 标题改号/改名的“旧标题幽灵行”（仅修订版显示）——删除在前
+\newcommand*{\guiderevold}[1]{%
+  \ifrevision\par\vspace{6bp}\noindent{\heiti\bodyfont\cjkhlst{revdelbg}{#1}\par}\nobreak\fi}
+% 新增标题（修订版显示为绿色高亮标题；干净版不出现——由 build_tex 直接输出普通标题）——新增在后
+\newcommand*{\guiderevnew}[1]{%
+  \ifrevision\par\vspace{6bp}\noindent{\heiti\bodyfont\cjkhl{revaddbg}{#1}\par}\nobreak\fi}
+% 标题改号/改名的“混合行”：只标出真正改动的部分（旧红删除+新绿高亮），其余照常
+\newcommand*{\guiderevheadmix}[1]{%
+  \ifrevision\par\vspace{6bp}\noindent{\heiti\bodyfont #1\par}\nobreak\fi}
 
 % ================= 插图 =================
 \RequirePackage{graphicx}

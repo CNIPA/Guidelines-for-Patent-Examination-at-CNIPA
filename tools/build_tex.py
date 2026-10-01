@@ -8,8 +8,11 @@ import json, os, re, sys, io
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from textdiff import diff_segs   # noqa: E402
+
 LAT = os.path.join(ROOT, 'latex')
-CONTENT = os.path.join(ROOT, 'data', 'content.json')
+CONTENT = os.environ.get('CONTENT_JSON') or os.path.join(ROOT, 'data', 'content.json')
 
 PART_NUM_CN = {1: '一', 2: '二', 3: '三', 4: '四', 5: '五', 6: '六'}
 
@@ -37,6 +40,10 @@ def segs_to_tex(segs):
             continue
         if st == '' or st == 'sub' and not out:
             out.append(t)
+        elif st == 'add':
+            out.append('\\added{%s}' % t)
+        elif st == 'del':
+            out.append('\\deleted{%s}' % t)
         elif st == 'kai':
             out.append('{\\kaiti %s}' % t)
         elif st == 'hei':
@@ -170,6 +177,7 @@ def main():
     os.makedirs(os.path.join(LAT, 'content'), exist_ok=True)
     # 复制不带折行换行（实验）：默认关闭，ACTUALTEXT=1 时启用（见 README）
     actual = os.environ.get('ACTUALTEXT', '0') in ('1', 'true', 'True')
+    revision = os.environ.get('REVISION', '') in ('1', 'true', 'True')
     # 跨页段落不能加标记（否则 BDC/EMC 分处两页会致复制重复），由
     # tools/detect_spanning.py 预先生成跳过列表。
     at_skip = set()
@@ -266,6 +274,8 @@ def main():
                     pass  # 章结构由 chaptertitle 驱动
                 elif t == 'heading':
                     lvl = heading_level(b['text'])
+                    if lvl is None:
+                        lvl = 2
                     hn, ht = split_heading(b['text'])
                     head_idx += 1
                     if hn:
@@ -275,19 +285,30 @@ def main():
                     existing_dests.add(dest)
                     nts = notes_tex(b.get('notes', []))
                     nd = need[bi]
-                    def hcall(macro):
-                        w('\\%s{%s}{%s}{%s}{%s}{%s}\n' % (macro, dest, esc(hn), esc(ht), nts, nd))
-                    if lvl == 2:
-                        hcall('guidesection')
-                    elif lvl == 3:
-                        hcall('guidesubsection')
-                    elif lvl == 4:
-                        hcall('guidesubsubsection')
-                    elif lvl == 5:
-                        hcall('guideparagraph')
-                    else:
-                        w('%% [未识别标题级别]\n')
-                        hcall('guidesection')
+                    macro = {2: 'guidesection', 3: 'guidesubsection',
+                             4: 'guidesubsubsection', 5: 'guideparagraph'}.get(lvl, 'guidesection')
+                    levelname = {2: 'section', 3: 'subsection',
+                                 4: 'subsubsection', 5: 'paragraph'}.get(lvl, 'section')
+                    rev = b.get('rev')
+                    if rev == 'del':
+                        if revision:
+                            w('\\guiderevold{%s}\n' % esc((hn + ' ' + ht).strip()))
+                        continue
+                    if revision and rev in ('renumber', 'retitle'):
+                        # 只标出真正改动的地方（如仅序号变化），不整体重标标题
+                        mix = segs_to_tex(diff_segs(b.get('old_text', ''), (hn + ' ' + ht).strip()))
+                        w('\\phantomsection\\hypertarget{%s}{}\n' % dest)
+                        w('\\addcontentsline{toc}{%s}{%s %s}\n' % (levelname, esc(hn), esc(ht)))
+                        w('\\ptcwrite{%s}{%s}{%s}{%s}\n' % (levelname, dest, esc(hn), esc(ht)))
+                        w('\\guiderevheadmix{%s}\n' % mix)
+                        continue
+                    if revision and rev == 'add':
+                        w('\\phantomsection\\hypertarget{%s}{}\n' % dest)
+                        w('\\addcontentsline{toc}{%s}{%s %s}\n' % (levelname, esc(hn), esc(ht)))
+                        w('\\ptcwrite{%s}{%s}{%s}{%s}\n' % (levelname, dest, esc(hn), esc(ht)))
+                        w('\\guiderevnew{%s}\n' % esc((hn + ' ' + ht).strip()))
+                        continue
+                    w('\\%s{%s}{%s}{%s}{%s}{%s}\n' % (macro, dest, esc(hn), esc(ht), nts, nd))
                 elif t == 'para':
                     wrap = actual and (para_index not in at_skip)
                     w(para_tex(b, wrap))
@@ -339,7 +360,6 @@ def main():
 
     # ---- main.tex ----
     # 修订开关：环境变量 REVISION=1 时生成带修订标记版（\revisiontrue）
-    revision = os.environ.get('REVISION', '') in ('1', 'true', 'True')
     with open(os.path.join(LAT, 'main.tex'), 'w', encoding='utf-8') as f:
         w = f.write
         w('% !TeX program = tectonic\n')
@@ -349,7 +369,7 @@ def main():
             w('% ===== 复制不带折行换行（实验）：启用 ActualText 标记 =====\n')
             w('\\guideactualtrue\n')
         if revision:
-            w('% ===== 修订标记版：旧文删除线(红) / 新增下划线(蓝) =====\n')
+            w('% ===== 修订标记版：新增=绿色 / 删除=红色删除线（参照 EPO showing modifications）=====\n')
             w('\\revisiontrue\n')
         w('\\begin{document}\n')
         w('\\input{frontcover}\n')
@@ -377,6 +397,10 @@ def main():
         w('{\\songti\\bfseries\\fontsize{36bp}{54bp}\\selectfont 专利审查指南\\par}\n')
         w('\\vspace{73bp}\n')
         w('{\\textbf{\\fontsize{21.96bp}{33bp}\\selectfont 2023}\\par}\n')
+        note = os.environ.get('GUIDE_EDITION_NOTE', '')
+        if note:
+            w('\\vspace{6bp}\n')
+            w('{\\songti\\fontsize{12bp}{18bp}\\selectfont %s\\par}\n' % esc(note))
         w('\\vspace{16bp}\n')
         w('{\\songti\\fontsize{10.56bp}{18bp}\\selectfont 国家知识产权局\\quad 制\\quad 定\\par}\n')
         w('\\endgroup\\clearpage\n')
